@@ -194,6 +194,9 @@ source "drivers/sensors/Kconfig"
 
 source "drivers/firmware/Kconfig"
 
+# anbox
+source "drivers/anbox/Kconfig"
+
 source "drivers/bif/Kconfig"
 
 endmenu
