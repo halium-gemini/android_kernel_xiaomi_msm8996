@@ -16,6 +16,19 @@ config BACKPORT_BT_RTL
 	depends on !BT_RTL
 	depends on FW_LOADER
 
+config BACKPORT_BT_QCA
+	tristate
+	select FW_LOADER
+
+config BACKPORT_BT_HCISMD
+	tristate "HCI SMD driver"
+	help
+	  Bluetooth HCI SMD driver.
+          This driver is required if you want to use Bluetoth device with
+	  SMD interface.
+	  Say Y here to compile support for Bluetooth USB devices into the
+          kernel or say M to compile is as a module (hci_smd).
+
 config BACKPORT_BT_HCIBTUSB
 	tristate "HCI USB driver"
 	depends on !BT_HCIBTUSB
@@ -89,6 +102,18 @@ config BACKPORT_BT_HCIUART_H4
 	  with UART interface, including PCMCIA and CF cards.
 
 	  Say Y here to compile support for HCI UART (H4) protocol.
+
+config BACKPORT_BT_HCIUART_IBS
+	bool "HCI_IBS protocol support"
+	depends on !BT_HCIUART_IBS
+	depends on BACKPORT_BT_HCIUART
+	default n
+	help
+	  HCI_IBS (HCI In-Band Sleep) is a serial protocol for communication
+	  between Bluetooth device and host. This protocol is required for
+	  UART clock control for some Qualcomm Bluetooth devices.
+
+	  Say Y here to compile support for HCI_IBS protocol.
 
 config BACKPORT_BT_HCIUART_BCSP
 	bool "BCSP protocol support"
@@ -164,6 +189,20 @@ config BACKPORT_BT_HCIUART_BCM
 	  port interface for Broadcom Bluetooth controllers.
 
 	  Say Y here to compile support for Broadcom protocol.
+
+config BACKPORT_BT_HCIUART_QCA
+	bool "Qualcomm Atheros protocol support"
+	depends on !BT_HCIUART
+	depends on BACKPORT_BT_HCIUART
+	select BACKPORT_BT_HCIUART_H4
+	select BACKPORT_BT_QCA
+	help
+	  The Qualcomm Atheros protocol supports HCI In-Band Sleep feature
+	  over serial port interface(H4) between controller and host.
+	  This protocol is required for UART clock control for QCA Bluetooth
+	  devices.
+
+	  Say Y here to compile support for QCA protocol.
 
 config BACKPORT_BT_HCIBCM203X
 	tristate "HCI BCM203x USB driver"
@@ -327,15 +366,26 @@ config BACKPORT_BT_WILINK
 	  Say Y here to compile support for Texas Instrument's WiLink7 driver
 	  into the kernel or say M to compile it as module (btwilink).
 
-config BACKPORT_BT_HCISMD
-	tristate "HCI SMD driver"
+config BACKPORT_MSM_BT_POWER
+	tristate "MSM Bluetooth Power Control"
+	depends on !MSM_BT_POWER
+	depends on ARCH_MSM && RFKILL
+	default m
 	help
-	  Bluetooth HCI SMD driver
-	  This driver is required if you want to use Bluetooth devices with
-	  a shared memory interface.
+	  Provides a parameter to switch on/off power from PMIC
+	  to Bluetooth device.
 
-	  Say Y here to compile support for Bluetooth SMD devices into the
-	  kernel or say M to compile it as module (hci_smd).
+config BACKPORT_BT_QCOMSMD
+	tristate "Qualcomm SMD based HCI support"
+	depends on RPMSG || (COMPILE_TEST && RPMSG=n)
+	depends on QCOM_WCNSS_CTRL || (COMPILE_TEST && QCOM_WCNSS_CTRL=n)
+	select BACKPORT_BT_QCA
+	help
+	  Qualcomm SMD based HCI driver.
+	  This driver is used to bridge HCI data onto the shared memory
+	  channels to the WCNSS core.
 
-	  
+	  Say Y here to compile support for HCI over Qualcomm SMD into the
+	  kernel or say M to compile as a module.
+
 endmenu
